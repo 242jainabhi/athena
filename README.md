@@ -1,0 +1,1 @@
+provider service with few APIs exposed
