@@ -1,6 +1,7 @@
 # using flask_restful
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from flask_restful import Resource, Api
+
 
 # creating the flask app
 app = Flask(__name__)
@@ -25,7 +26,8 @@ class Hello(Resource):
     def post(self):
         """ Corresponds to POST request """
         data = request.get_json() # status code
-        return jsonify({'data': data}), 201
+        # print(data)
+        return make_response(jsonify(data), 200)
 
 
 # # another resource to calculate the square of a number
@@ -64,4 +66,4 @@ api.add_resource(TodoSimple, '/todo/<string:todo_id>')
 
 # driver function
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5001, debug=True)
