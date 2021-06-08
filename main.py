@@ -1,69 +1,21 @@
-# using flask_restful
-from flask import Flask, jsonify, request, make_response
-from flask_restful import Resource, Api
+from flask import Flask
+from flask_restful import Api
+from resources import health_check, hello, todo, square
 
-
-# creating the flask app
 app = Flask(__name__)
-# creating an API object
 api = Api(app)
 
 
-@app.route('/greet/<name>')
-def greeting(name):
-    return 'Hi %s!!!' % name
+@app.route('/')
+def home():
+    return 'Welcome to Athena'
 
 
-class Hello(Resource):
-    def get(self):
-        """
-            corresponds to the GET request.
-            this function is called whenever there
-            is a GET request for this resource
-        """
-        return jsonify({'message': 'hello world'})
+api.add_resource(health_check.Health, '/health')
+api.add_resource(hello.Hello, '/hello')
+api.add_resource(square.Square, '/square/<int:num>')
+api.add_resource(todo.TodoSimple, '/todo/<string:todo_id>')
 
-    def post(self):
-        """ Corresponds to POST request """
-        data = request.get_json() # status code
-        # print(data)
-        return make_response(jsonify(data), 200)
-
-
-# # another resource to calculate the square of a number
-class Square(Resource):
-    def get(self, num):
-        return jsonify({'square': num ** 2})
-
-
-# To-Do App
-todos = {}
-
-
-class TodoSimple(Resource):
-    def get(self, todo_id):
-        if todo_id in todos:
-            return {todo_id: todos[todo_id]}
-        else:
-            return '%s not available' % todo_id
-
-    def put(self, todo_id):
-        todos[todo_id] = request.form['data']
-        return {todo_id: todos[todo_id]}
-
-    def delete(self, todo_id):
-        if todo_id in todos:
-            del todos[todo_id]
-            return '%s deleted successfully!!!' % todo_id
-        else:
-            return "%s not available to be deleted." % todo_id
-
-
-# # adding the defined resources along with their corresponding urls
-api.add_resource(Hello, '/')
-api.add_resource(Square, '/square/<int:num>')
-api.add_resource(TodoSimple, '/todo/<string:todo_id>')
-
-# driver function
 if __name__ == '__main__':
-    app.run(port=5001, debug=True)
+    app.run(host='0.0.0.0', port=8081)
+
